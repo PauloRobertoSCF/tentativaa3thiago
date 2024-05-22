@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requisição AJAX</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+
+
+  <h2>Mercado</h2>
+  <p>Adicionar Mercado</p>
+
+  <hr>
+  <form id="adicionarMercado">
+    <label for="nomeMercado">Nome:</label>
+    <input type="text" id="nomeMercado" name="nomeMercado" required />
+
+    <button onclick="adicionarMercado()">Adicionar Mercado</button>
+  </form>
+  <script>
+    function adicionarMercado() {
+  // Criar uma instância do objeto XMLHttpRequest
+  var xhr = new XMLHttpRequest();
+  // Configurar a requisição
+  xhr.open("POST", `http://127.0.0.1:3000/mercados?nome=${document.getElementById("nomeMercado").value}`, true);
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+  // Configurar a função de callback para lidar com a resposta
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      // A resposta foi recebida com sucesso
+      var resposta = JSON.parse(xhr.responseText);
+      alert(xhr.responseText)
+      
+    }else if (xhr.readyState == 4 && xhr.status != 200) {
+      console.log(xhr.responseText)
+      alert(xhr.responseText)
+      }
+  };
+  var data = {
+    nome:document.getElementById("nomeMercado").value
+  }
+  console.log(data)
+  // Enviar a requisição
+  xhr.send(JSON.stringify(data));
+}
+  </script>
+  <hr>
+
+<button onclick="fazerRequisicaoMercado()">Fazer listagem de Mercados</button>
+
+<table id="tabela">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Ação</th>
+
+      <!-- Adicione mais colunas conforme necessário -->
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Dados da tabela serão inseridos aqui -->
+  </tbody>
+</table>
+
+<script>
+  function copiarMercado(idMercado,nome) {
+    // Criar uma instância do objeto XMLHttpRequest
+    var mercadoIDatualizar = document.getElementById("mercadoIDatualizar");
+    var nomeMercadoatualizar = document.getElementById("nomeMercadoatualizar");
+
+    mercadoIDatualizar.value = idMercado
+    nomeMercadoatualizar.value = nome
+   
+  }
+  </script>
+
+<script>
+  function atualizarMercado() {
+// Criar uma instância do objeto XMLHttpRequest
+var xhr = new XMLHttpRequest();
+// Configurar a requisição
+xhr.open("PUT", `http://127.0.0.1:3000/mercados`, true);
+xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+// Configurar a função de callback para lidar com a resposta
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    // A resposta foi recebida com sucesso
+    var resposta = JSON.parse(xhr.responseText);
+    alert(xhr.responseText)
+    
+  }else if (xhr.readyState == 4 && xhr.status != 200) {
+    console.log(xhr.responseText)
+    alert(xhr.responseText)
+    }
+};
+var data = {
+  idMercado:document.getElementById("mercadoIDatualizar").value,
+  nome:document.getElementById("nomeMercadoatualizar").value,
+}
+console.log(data)
+// Enviar a requisição
+xhr.send(JSON.stringify(data));
+}
+</script>
+
+
+<script>
+  function deletarMercado(idMercado) {
+    // Criar uma instância do objeto XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+  
+    // Configurar a requisição
+    xhr.open("DELETE", "http://127.0.0.1:3000/mercados/"+idMercado, true);
+  
+    // Configurar a função de callback para lidar com a resposta
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        // A resposta foi recebida com sucesso
+        var resposta = JSON.parse(xhr.responseText);
+        alert('deletado')
+      }
+    };
+  
+    // Enviar a requisição
+    xhr.send();
+  }
+  </script>
+
+<script>
+function fazerRequisicaoMercado() {
+  // Criar uma instância do objeto XMLHttpRequest
+  var xhr = new XMLHttpRequest();
+
+  // Configurar a requisição
+  xhr.open("GET", "http://127.0.0.1:3000/mercados", true);
+
+  // Configurar a função de callback para lidar com a resposta
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      // A resposta foi recebida com sucesso
+      var resposta = JSON.parse(xhr.responseText);
+      
+      // Limpar a tabela
+      var tabela = document.getElementById("tabela");
+      var tbody = tabela.getElementsByTagName("tbody")[0];
+      tbody.innerHTML = "";
+
+      // Preencher a tabela com os dados
+      for (var i = 0; i < resposta.length; i++) {
+        var row = tbody.insertRow(i);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        
+
+        cell1.innerHTML = resposta[i].idMercado;
+        cell2.innerHTML = resposta[i].nome;
+        cell3.innerHTML = `<center><button onclick='deletarMercado(${resposta[i].idMercado})'>Deletar Mercado</button><button style="margin-left: 10px;" onclick="copiarMercado(${resposta[i].idMercado},'${resposta[i].nome}')">Atualizar Mercado</button></center>`;
+        
+        // Adicione mais cells conforme necessário
+      }
+    }
+  };
+
+  // Enviar a requisição
+  xhr.send();
+}
+</script>
+
+<p>Atualizar Mercado</p>
+  <hr>
+  <form id="atualizarMercado">
+    <label for="mercadoID">ID:</label>
+    <input type="number" id="mercadoIDatualizar" name="mercadoID" required disabled />
+
+    <label for="nomeMercado">Nome:</label>
+    <input type="text" id="nomeMercadoatualizar" name="nomeMercado"/>
+
+    <button onclick="atualizarMercado()">Atualizar Mercado</button>
+  </form>
+
+
+
+<h2>Produto</h2>
+<p>Adicionar Produto</p>
+
+<hr>
+<form id="adicionarProduto">
+  <label for="nomeProduto">Nome:</label>
+  <input type="text" id="nomeProduto" name="nomeProduto" required />
+
+  <label for="quantidade">Quantidade:</label>
+  <input type="number" id="quantidade" name="quantidade" required />
+
+  <label for="preco">Preço:</label>
+  <input type="number" id="preco" name="preco" required />
+
+  <button onclick="adicionarProduto()">Adicionar Produto</button>
+</form>
+<script>
+  function adicionarProduto() {
+// Criar uma instância do objeto XMLHttpRequest
+var xhr = new XMLHttpRequest();
+// Configurar a requisição
+xhr.open("POST", `http://127.0.0.1:3000/produtos?quantidade=${document.getElementById("quantidade").value}`, true);
+xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+// Configurar a função de callback para lidar com a resposta
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    // A resposta foi recebida com sucesso
+    var resposta = JSON.parse(xhr.responseText);
+    alert(xhr.responseText)
+    
+  }else if (xhr.readyState == 4 && xhr.status != 200) {
+    console.log(xhr.responseText)
+    alert(xhr.responseText)
+    }
+};
+var data = {
+  nome:document.getElementById("nomeProduto").value,
+  quantidade:document.getElementById("quantidade").value,
+  preco:document.getElementById("preco").value
+}
+console.log(data)
+// Enviar a requisição
+xhr.send(JSON.stringify(data));
+}
+</script>
+<hr>
+
+<button onclick="fazerRequisicaoProduto()">Fazer listagem de Produtos</button>
+
+<table id="tabelaProduto">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Quantidade</th>
+      <th>Preço</th>
+      <th>Ação</th>
+      <!-- Adicione mais colunas conforme necessário -->
+    </tr>
+  </thead>
+  <tbody id="tbodyProduto">
+    <!-- Dados da tabela serão inseridos aqui -->
+  </tbody>
+</table>
+<script>
+function fazerRequisicaoProduto() {
+  // Criar uma instância do objeto XMLHttpRequest
+  var xhrProduto = new XMLHttpRequest();
+
+  // Configurar a requisição
+  xhrProduto.open("GET", "http://127.0.0.1:3000/produtos", true);
+
+  // Configurar a função de callback para lidar com a resposta
+  xhrProduto.onreadystatechange = function() {
+    if (xhrProduto.readyState == 4 && xhrProduto.status == 200) {
+      // A resposta foi recebida com sucesso
+      var respostaProduto = JSON.parse(xhrProduto.responseText);
+      
+      // Limpar a tabela
+      var tabelaProduto = document.getElementById("tabelaProduto");
+      var tbodyProduto = tabelaProduto.getElementsByTagName("tbody")[0];
+      tbodyProduto.innerHTML = "";
+
+      // Preencher a tabela com os dados
+      for (var i = 0; i < respostaProduto.length; i++) {
+        var rowProduto = tbodyProduto.insertRow(i);
+        var cell1 = rowProduto.insertCell(0);
+        var cell2 = rowProduto.insertCell(1);
+        var cell3 = rowProduto.insertCell(2);
+        var cell4 = rowProduto.insertCell(3);
+        var cell5 = rowProduto.insertCell(4);
+
+        cell1.innerHTML = respostaProduto[i].idProduto;
+        cell2.innerHTML = respostaProduto[i].nome;
+        cell3.innerHTML = respostaProduto[i].quantidade;
+        cell4.innerHTML = respostaProduto[i].preco;
+        cell5.innerHTML = `<center><button onclick='deletarProduto(${respostaProduto[i].idProduto})'>Deletar Produto</button><button style="margin-left: 10px;" onclick="copiarProduto(${respostaProduto[i].idProduto},'${respostaProduto[i].nome}','${respostaProduto[i].quantidade}','${respostaProduto[i].preco}')">Atualizar Produto</button></center>`;
+        // Adicione mais cells conforme necessário
+      }
+    }
+  };
+
+  // Enviar a requisição
+  xhrProduto.send();
+}
+</script>
+
+
+<script>
+  function copiarProduto(idProduto,nome,quantidade,preco) {
+    // Criar uma instância do objeto XMLHttpRequest
+    var produtoIDatualizar = document.getElementById("produtoIDatualizar");
+    var nomeProdutoatualizar = document.getElementById("nomeProdutoatualizar");
+    var quantidadetualizar = document.getElementById("quantidadeatualizar");
+    var precotualizar = document.getElementById("precoatualizar");
+
+    produtoIDatualizar.value = idProduto
+    nomeProdutoatualizar.value = nome
+    quantidadeatualizar.value = quantidade
+    precoatualizar.value = preco
+   
+  }
+  </script>
+
+<script>
+  function atualizarProduto() {
+// Criar uma instância do objeto XMLHttpRequest
+var xhr = new XMLHttpRequest();
+// Configurar a requisição
+xhr.open("PUT", `http://127.0.0.1:3000/produtos`, true);
+xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+// Configurar a função de callback para lidar com a resposta
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    // A resposta foi recebida com sucesso
+    var resposta = JSON.parse(xhr.responseText);
+    alert(xhr.responseText)
+    
+  }else if (xhr.readyState == 4 && xhr.status != 200) {
+    console.log(xhr.responseText)
+    alert(xhr.responseText)
+    }
+};
+var data = {
+  idProduto:document.getElementById("produtoIDatualizar").value,
+  nome:document.getElementById("nomeProdutoatualizar").value,
+  quantidade:document.getElementById("quantidadeatualizar").value,
+  preco:document.getElementById("precoatualizar").value
+}
+console.log(data)
+// Enviar a requisição
+xhr.send(JSON.stringify(data));
+}
+</script>
+
+
+<p>Atualizar Produto</p>
+  <hr>
+  <form id="atualizarProduto">
+    <label for="produtoID">ID:</label>
+    <input type="number" id="produtoIDatualizar" name="produtoID" required disabled />
+
+    <label for="nomeProduto">Nome:</label>
+    <input type="text" id="nomeProdutoatualizar" name="nomeProduto"/>
+
+    <label for="quantidade">Quantidade:</label>
+    <input type="number" id="quantidadeatualizar" name="quantidade"/>
+
+    <label for="preco">Preço:</label>
+    <input type="number" id="precoatualizar" name="preco"/>
+
+    <button onclick="atualizarProduto()">Atualizar Produto</button>
+  </form>
+
+  <script>
+    function deletarProduto(idProduto) {
+      // Criar uma instância do objeto XMLHttpRequest
+      var xhr = new XMLHttpRequest();
+    
+      // Configurar a requisição
+      xhr.open("DELETE", "http://127.0.0.1:3000/produtos/"+idProduto, true);
+    
+      // Configurar a função de callback para lidar com a resposta
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          // A resposta foi recebida com sucesso
+          var resposta = JSON.parse(xhr.responseText);
+          alert('deletado')
+        }
+      };
+    
+      // Enviar a requisição
+      xhr.send();
+    }
+    </script>
+
+
+
+
+  <hr>
+
+  <h2>Lista</h2>
+  <p>Criar Lista</p>
+
+  <hr>
+  <form id="adicionarLista">
+    <label for="produtoID">ID do Produto:</label>
+    <input type="number" id="produtoID" name="produtoID" required/>
+
+
+    <label for="mercadoID">ID do Mercado:</label>
+    <input type="number" id="mercadoID" name="mercadoID" required/>
+
+    <button onclick="adicionarLista()">Adicionar Lista</button>
+  </form>
+  <hr>
+
+  <script>
+    function adicionarLista() {
+  // Criar uma instância do objeto XMLHttpRequest
+  var xhr = new XMLHttpRequest();
+  // Configurar a requisição
+  xhr.open("POST", `http://127.0.0.1:3000/listas?idMercado=${document.getElementById("mercadoID").value}`, true);
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+  
+  // Configurar a função de callback para lidar com a resposta
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      // A resposta foi recebida com sucesso
+      var resposta = JSON.parse(xhr.responseText);
+      alert(xhr.responseText)
+      
+    }else if (xhr.readyState == 4 && xhr.status != 200) {
+      console.log(xhr.responseText)
+      alert(xhr.responseText)
+      }
+  };
+  var data = {
+    idMercado:document.getElementById("mercadoID").value,
+    idProduto:document.getElementById("produtoID").value,
+    preco:document.getElementById("produtoID").value
+  }
+  console.log(data)
+  // Enviar a requisição
+  xhr.send(JSON.stringify(data));
+  }
+  </script>
+
+
+
+
+
+<button onclick="fazerRequisicaoLista()">Fazer listagem das listas</button>
+
+<table id="tabelaLista">
+  <thead>
+    <tr>
+      <th>ID Lista</th>
+      <th>Nome do Mercado</th>
+      <th>Produto</th>
+      <th>Preço</th>
+      <!-- Adicione mais colunas conforme necessário -->
+    </tr>
+  </thead>
+  <tbody id="tbodyLista">
+    <!-- Dados da tabela serão inseridos aqui -->
+  </tbody>
+</table>
+<script>
+function fazerRequisicaoLista() {
+  // Criar uma instância do objeto XMLHttpRequest
+  var xhrLista = new XMLHttpRequest();
+
+  // Configurar a requisição
+  xhrLista.open("GET", "http://127.0.0.1:3000/listas", true);
+
+  // Configurar a função de callback para lidar com a resposta
+  xhrLista.onreadystatechange = function() {
+    if (xhrLista.readyState == 4 && xhrLista.status == 200) {
+      // A resposta foi recebida com sucesso
+      var respostaLista = JSON.parse(xhrLista.responseText);
+      
+      // Limpar a tabela
+      var tabelaLista = document.getElementById("tabelaLista");
+      var tbodyLista = tabelaLista.getElementsByTagName("tbody")[0];
+      tbodyLista.innerHTML = "";
+
+      // Preencher a tabela com os dados
+      for (var i = 0; i < respostaLista.length; i++) {
+        var rowLista = tbodyLista.insertRow(i);
+        var cell1 = rowLista.insertCell(0);
+        var cell2 = rowLista.insertCell(1);
+        var cell3 = rowLista.insertCell(2);
+        var cell4 = rowLista.insertCell(3);
+
+        cell1.innerHTML = respostaLista[i].idLista;
+        cell2.innerHTML = respostaLista[i].Mercado.nome;
+        cell3.innerHTML = respostaLista[i].Produto.nome;
+        cell4.innerHTML = respostaLista[i].preco;
+        // Adicione mais cells conforme necessário
+      }
+    }
+  };
+
+  // Enviar a requisição
+  xhrLista.send();
+}
+</script>
+
+</body>
+</html>
