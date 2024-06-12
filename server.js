@@ -59,5 +59,3 @@ app.use(routes);
 
 // inicializa o express na porta 3000
 app.listen(3000, () => console.log("Servidor iniciado em http://127.0.0.1:3000"));
-
-///////////////////////////////////////////////////////////////
